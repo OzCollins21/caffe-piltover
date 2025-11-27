@@ -28,7 +28,7 @@ header h1{font-size:clamp(1.8rem,4vw,3rem);text-shadow:0 6px 18px rgba(0,0,0,.6)
 .conocenos-imagen-lateral {flex: 1 1 40%;} 
 .conocenos-imagen-lateral img {width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); object-fit: cover; max-height: 450px;}
 
-/* Productos (Catálogo) */
+/* Productos */
 .producto{display:flex;gap:16px;align-items:flex-start;background:#faf8f6;padding:18px;border-radius:12px;margin-bottom:16px;border:1px solid rgba(0,0,0,0.03)}
 .producto img{width:160px;height:120px;object-fit:cover;border-radius:8px}
 .producto .detalles{flex:1}
@@ -159,42 +159,13 @@ footer {display: flex; justify-content: center; gap: 15px; padding: 20px 18px; b
     .tracking{flex-direction:row;width:100%;justify-content:center}
     .tracking .label{display:none}
     .conocenos-layout{flex-direction:column}
-    /* FIX: Permitir que la imagen se escale mejor en tablet/móvil */
-    .conocenos-imagen-lateral img{margin-top:16px; height: auto; max-height: 400px;} 
+    .conocenos-imagen-lateral img{margin-top:16px; max-height: 300px;}
     .perfil-menu {flex-direction: row; flex-wrap: wrap; justify-content: space-around;}
     .perfil-menu button {flex: 1 1 45%;}
     /* El resto de estilos responsive anteriores */
 }
 
 @media (max-width: 600px) {
-    /* FIX: Reducir altura del encabezado */
-    header {
-        height: 40vh;
-    }
-    
-    /* FIX: Optimización de tarjetas de menú */
-    .menu {
-        margin: 28px 10px;
-    }
-    .card {
-        width: 90vw; /* El ancho de la tarjeta es el 90% del ancho de la pantalla */
-        max-width: 400px; 
-        height: 150px;
-    }
-    
-    /* FIX: Optimización de productos (catálogo) */
-    .producto {
-        flex-direction: column; /* Apila imagen y detalles */
-        align-items: center;
-    }
-    .producto img {
-        width: 100%; /* La imagen ocupa todo el ancho */
-        height: auto; 
-        max-height: 200px;
-        margin-bottom: 8px;
-    }
-
-    /* Estilos existentes */
     footer {flex-direction: column; gap: 10px;}
     #toast-container {bottom: 10px; right: 10px; left: 10px;}
     /* Ajuste para formularios internos en móvil */
