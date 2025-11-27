@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Piltover Café - Café Gourmet Panamá</title>
+<style>
+/* Reset y tipografía */
+*{margin:0;padding:0;box-sizing:border-box;font-family:Poppins,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial}
+body{background:#f5f2ed;color:#222;min-height:100vh}
+header{background:url('https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1500&q=80')center/cover;height:60vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;color:white;padding:32px}
+header h1{font-size:clamp(1.8rem,4vw,3rem);text-shadow:0 6px 18px rgba(0,0,0,.6)}header p{font-size:clamp(.95rem,1.2vw,1.2rem);max-width:900px;margin-top:12px;text-shadow:0 4px 12px rgba(0,0,0,.45)}
+
+/* Menú de tarjetas */
+.menu{display:flex;justify-content:center;gap:18px;margin:28px 16px;flex-wrap:wrap}
+.card{width:280px;height:160px;border-radius:12px;overflow:hidden;position:relative;cursor:pointer;transition:transform .22s,box-shadow .22s;box-shadow:0 8px 30px rgba(19,19,19,0.06)}
+.card:hover{transform:translateY(-6px);box-shadow:0 18px 40px rgba(19,19,19,0.1)}.card img{width:100%;height:100%;object-fit:cover;filter:brightness(.58)}.card span{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:1.4rem;color:#fff;font-weight:700;text-shadow:0 6px 16px rgba(0,0,0,.45)}
+
+/* Secciones generales */
+.container{max-width:1100px;margin:22px auto;padding:0 18px}
+.seccion{display:none;padding:26px;background:#fff;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.06)}
+.seccion.visible{display:block}
+.seccion h2{margin-bottom:14px;color:#1f2d3d}
+
+/* Estilos específicos para la sección CONÓCENOS (Lado a lado) */
+.conocenos-layout {display: flex; gap: 24px; align-items: center; margin-top: 16px;}
+.conocenos-texto {flex: 1 1 60%;} 
+.conocenos-imagen-lateral {flex: 1 1 40%;} 
+.conocenos-imagen-lateral img {width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); object-fit: cover; max-height: 450px;}
+
+/* Productos (Catálogo) */
+.producto{display:flex;gap:16px;align-items:flex-start;background:#faf8f6;padding:18px;border-radius:12px;margin-bottom:16px;border:1px solid rgba(0,0,0,0.03)}
+.producto img{width:160px;height:120px;object-fit:cover;border-radius:8px}
+.producto .detalles{flex:1}
+.select-box{margin:8px 0;display:flex;gap:8px;align-items:center}
+.select-box label{min-width:80px}
+select,input[type=number]{padding:8px;border-radius:8px;border:1px solid #cfcfcf}
+.btn{padding:10px 16px;background:#be8040;color:#fff;border-radius:8px;border:none;cursor:pointer}
+.btn.secondary{background:#5d5d5d}
+.btn.small{padding:8px 10px;font-size:.9rem}
+
+/* Carrito */
+.cart-list{display:flex;flex-direction:column;gap:10px}
+.cart-item{display:flex;gap:12px;align-items:center;padding:12px;background:#fff;border-radius:8px;border:1px solid #eee}
+.cart-item img{width:72px;height:56px;object-fit:cover;border-radius:6px}
+.cart-item .meta{flex:1}
+.cart-summary{margin-top:12px;display:flex;justify-content:space-between;align-items:center}
+
+/* Envío, Contacto, Footer */
+.envio-grid{display:flex;gap:18px;align-items:flex-start}
+.pasos{flex:1}
+.paso{background:#fffaf7;padding:12px;border-left:5px solid #be8040;border-radius:8px;margin-bottom:12px}
+.tracking{width:120px;display:flex;flex-direction:column;align-items:center;gap:18px}
+.circle{width:22px;height:22px;border-radius:50%;background:#bbb;transition:all .3s}
+.circle.active{background:green;box-shadow:0 4px 12px rgba(0,128,0,.25)}
+.tracking .label{font-size:.85rem;margin-top:6px;color:#444;text-align:center}
+.contacto-grid{display:flex;gap:20px;flex-wrap:wrap}
+.contacto-grid .info{flex:1;min-width:240px}
+.contacto-grid .form{flex:1;min-width:260px}
+.contacto-grid input,.contacto-grid textarea{padding:10px;border-radius:8px;border:1px solid #d0d0d0;margin:8px 0;width:100%}
+footer {display: flex; justify-content: center; gap: 15px; padding: 20px 18px; background: #442813; border-top: 4px solid #be8040; margin-top: 30px;}
+.footer-btn {padding: 10px 16px; background: #be8040; color: #fff; border-radius: 8px; text-decoration: none; font-weight: 600; transition: background-color 0.2s; text-align: center; flex-grow: 1; max-width: 300px; cursor: pointer;}
+.footer-btn:hover {background: #9f6c32;}
+#toast-container {position: fixed; bottom: 20px; right: 20px; z-index: 100;}
+.toast {background-color: #442813; color: white; padding: 12px 18px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); opacity: 0; transform: translateY(20px); transition: opacity 0.3s ease-out, transform 0.3s ease-out; margin-top: 10px; display: flex; align-items: center; gap: 10px; font-weight: 500;}
+.toast.show {opacity: 1; transform: translateY(0);}
+.toast-icon {font-size: 1.2rem;}
+
+/* --- ESTILOS PERFIL/DIRECCIÓN --- */
+.perfil-menu {display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;}
+.perfil-menu button {
+    background: #f5f2ed;
+    border: 1px solid #e0e0e0;
+    padding: 12px;
+    text-align: left;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+    font-weight: 600;
+}
+.perfil-menu button:hover {background: #eee; border-color: #be8040;}
+.perfil-menu button.active {background: #be8040; color: white; border-color: #be8040;}
+.perfil-content {padding: 15px; border: 1px solid #e0e0e0; border-radius: 8px; min-height: 200px; margin-top: 10px;}
+.perfil-content div {display: none;}
+.perfil-content div.active-tab {display: block;}
+
+/* Estilos de Direcciones */
+.address-item {
+    border: 1px solid #f0f0f0;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+}
+.address-item strong {color: #be8040;}
+.address-actions {margin-top: 10px; display: flex; gap: 10px;}
+.address-form-container input {margin-bottom: 15px;}
+.address-form-container .input-row {display: flex; gap: 10px; margin-bottom: 10px;}
+.address-form-container .input-row input {flex: 1;}
+
+
+/* Estilos de Historial de Compras */
+.purchase-item {
+    border: 1px solid #eee;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-left: 5px solid #be8040;
+    border-radius: 8px;
+    background: #fffaf7;
+    position: relative; 
+}
+.purchase-item strong {
+    color: #442813;
+    display: block;
+    margin-bottom: 5px;
+}
+.purchase-item p {
+    font-size: 0.95rem;
+    margin: 3px 0;
+}
+.purchase-details {
+    margin-top: 8px;
+    font-size: 0.9rem;
+    color: #555;
+    border-top: 1px dashed #e0e0e0;
+    padding-top: 5px;
+}
+.debug-info {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    font-size: 0.7rem;
+    color: #999;
+}
+/* Estilo Historial de Mensajes */
+#message-history-list p {
+    padding: 8px 12px;
+    margin-bottom: 5px;
+    border-radius: 6px;
+    /* Diferenciar mensajes */
+    background: #f9f9f9; 
+    border-left: 3px solid transparent;
+    font-size: 0.95rem;
+}
+#message-history-list p.user-msg {
+    background: #e0f0e0; /* Fondo más claro para el usuario */
+    border-left-color: green;
+}
+#message-history-list p.bot-msg {
+    background: #fff8f0; /* Fondo relacionado con el café */
+    border-left-color: #be8040;
+}
+
+
+/* Responsive */
+@media (max-width:820px){
+    .envio-grid{flex-direction:column}
+    .tracking{flex-direction:row;width:100%;justify-content:center}
+    .tracking .label{display:none}
+    .conocenos-layout{flex-direction:column}
+    /* FIX: Permitir que la imagen se escale mejor en tablet/móvil */
+    .conocenos-imagen-lateral img{margin-top:16px; height: auto; max-height: 400px;} 
+    .perfil-menu {flex-direction: row; flex-wrap: wrap; justify-content: space-around;}
+    .perfil-menu button {flex: 1 1 45%;}
+    /* El resto de estilos responsive anteriores */
+}
+
+@media (max-width: 600px) {
+    /* FIX: Reducir altura del encabezado */
+    header {
+        height: 40vh;
+    }
+    
+    /* FIX: Optimización de tarjetas de menú */
+    .menu {
+        margin: 28px 10px;
+    }
+    .card {
+        width: 90vw; /* El ancho de la tarjeta es el 90% del ancho de la pantalla */
+        max-width: 400px; 
+        height: 150px;
+    }
+    
+    /* FIX: Optimización de productos (catálogo) */
+    .producto {
+        flex-direction: column; /* Apila imagen y detalles */
+        align-items: center;
+    }
+    .producto img {
+        width: 100%; /* La imagen ocupa todo el ancho */
+        height: auto; 
+        max-height: 200px;
+        margin-bottom: 8px;
+    }
+
+    /* Estilos existentes */
+    footer {flex-direction: column; gap: 10px;}
+    #toast-container {bottom: 10px; right: 10px; left: 10px;}
+    /* Ajuste para formularios internos en móvil */
+    .address-form-container .input-row {flex-direction: column;}
+    .form-container .input-row {flex-direction: column;}
+    .form-container .input-row input {width: 100%;}
+    /* Ajuste para input de mensajes en móvil */
+    .form-container {flex-direction: column; align-items: stretch;}
+}
+</style>
+</head>
+<body>
+<header>
+<h1>Piltover Café</h1>
+<p>Exportando calidad desde Boquete, Chiriquí hacia Europa ☕✨</p>
+</header>
+
+<div class="container">
+  <div class="menu">
+    <div class="card" onclick="mostrar('historia')"><img src="https://images.unsplash.com/photo-1445077100181-a33e9ac94db0?auto=format&fit=crop&w=1500&q=80" alt="Historia"><span>Historia</span></div>
+    <div class="card" onclick="mostrar('catalogo')"><img src="https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?auto=format&fit=crop&w=1500&q=80" alt="Catálogo"><span>Catálogo</span></div>
+    <div class="card" onclick="mostrar('envio')"><img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1500&q=80" alt="Envío"><span>Envío</span></div>
+    <div class="card" onclick="mostrar('comentarios')"><img src="https://image.pollinations.ai/prompt/simple%20icon%20of%20two%20speech%20bubbles%20with%20stars%20and%20text%20'Comentarios'%20inside%20them%20on%20a%20light%20background" alt="Comentarios"><span>Comentarios</span></div>
+    <div class="card" onclick="mostrar('contacto')"><img src="https://images.unsplash.com/photo-1526045478516-99145907023c?auto=format&fit=crop&w=1500&q=80" alt="Contacto"><span>Contáctenos</span></div>
+  </div>
+
+    <section id="historia" class="seccion">
+    <h2>Nuestra Historia</h2>
+    <p>Nuestra historia comenzó como una simple tarea de **Logística Internacional**. El proyecto consistía en diseñar una posible exportación para un producto panameño, y sin pensarlo mucho elegimos trabajar con café.</p>
+    <p>Lo que empezó como un ejercicio académico despertó en nosotros una curiosidad real: ¿y si de verdad pudiéramos llevar café panameño al mundo? A partir de esa idea comenzamos a investigar fincas locales, procesos de producción, certificaciones y rutas de transporte. Sin darnos cuenta, el trabajo dejó de ser solo para la clase y se convirtió en el inicio de un emprendimiento.</p>
+    <p>Así nació nuestra marca de café, que primero probamos vender dentro de Panamá. El apoyo fue tan grande que las ventas crecieron rápidamente; nuestro café empezó a verse en tiendas, ferias y redes sociales, y muchos panameños se identificaron con el concepto de un producto nacional de calidad. Con el éxito local, decidimos dar el siguiente paso: aplicar todo lo aprendido sobre logística, Incoterms y comercio exterior para abrirnos al mercado europeo.</p>
+    <p>Realizamos nuestros primeros envíos piloto bajo el Incoterm **EXW** y enviamos lotes de prueba a países como Alemania, España y Países Bajos. Para nuestra sorpresa, el café tuvo una excelente aceptación en cafeterías especializadas y empezó a ganar reconocimiento entre baristas y distribuidores. Con el tiempo, logramos establecer socios comerciales y hoy nuestro café panameño se vende en varios puntos de Europa, llevando con orgullo el sabor y la calidad de nuestro país más allá de nuestras fronteras.</p>
+    <p>Todo comenzó con una tarea, pero la pasión, la investigación y el trabajo constante convirtieron esa idea en una historia real de crecimiento y éxito internacional. 🚀</p>
+    <img src="https://images.unsplash.com/photo-1506806732259-39c2d0268443?auto=format&fit=crop&w=1400&q=80" alt="Cosecha de café" style="width:100%;border-radius:12px;margin-top:18px">
+    <br><br><button class="btn" onclick="volver()">Volver</button>
+  </section>
+
+    <section id="catalogo" class="seccion">
+    <h2>Catálogo de Productos</h2>
+
+    <div class="producto" data-id="1">
+      <img src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=800&q=80" alt="Café Altura">
+      <div class="detalles">
+        <h3>Café Altura – Tueste Medio</h3>
+        <p>100% Arábica, 1,600 msnm. Notas: Caramelo, nueces, chocolate suave.</p>
+        <div class="select-box"><label>Tamaño:</label><select id="prod1-size"><option>250 g</option><option>500 g</option><option>1 kg</option></select></div>
+        <div class="select-box"><label>Cantidad:</label><input id="prod1-qty" type="number" value="0" min="0"></div>
+        <button class="btn small" onclick="addToCart(1)">Añadir al carrito</button>
+        <button class="btn secondary small" onclick="comprar(1)">Comprar</button>
+      </div>
+    </div>
+
+    <div class="producto" data-id="2">
+      <img src="https://images.unsplash.com/photo-1517685352821-92cf88aee5a5?auto=format&fit=crop&w=800&q=80" alt="Café Montaña">
+      <div class="detalles">
+        <h3>Café de Montaña – Tueste Oscuro</h3>
+        <p>Mezcla seleccionada de Boquete. Notas: Cacao, especias, final robusto.</p>
+        <div class="select-box"><label>Tamaño:</label><select id="prod2-size"><option>250 g</option><option>500 g</option><option>1 kg</option></select></div>
+        <div class="select-box"><label>Cantidad:</label><input id="prod2-qty" type="number" value="0" min="0"></div>
+        <button class="btn small" onclick="addToCart(2)">Añadir al carrito</button>
+        <button class="btn secondary small" onclick="comprar(2)">Comprar</button>
+      </div>
+    </div>
+
+    <div class="producto" data-id="3">
+      <img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=800&q=80" alt="Geisha Boquete">
+      <div class="detalles">
+        <h3>Geisha Boquete – Edición Premium</h3>
+        <p>Cultivado a 1,800 msnm. Notas: Jazmín, miel floral, bergamota.</p>
+        <div class="select-box"><label>Tipo:</label><select id="prod3-type"><option>Grano entero</option><option>Molido medio fino</option></select></div>
+        <div class="select-box"><label>Cantidad:</label><input id="prod3-qty" type="number" value="0" min="0"></div>
+        <button class="btn small" onclick="addToCart(3)">Añadir al carrito</button>
+        <button class="btn secondary small" onclick="comprar(3)">Comprar</button>
+      </div>
+    </div>
+
+    <div class="producto" data-id="4">
+      <img src="https://images.unsplash.com/photo-1445077100181-a33eac94db0?auto=format&fit=crop&w=800&q=80" alt="Cold Brew">
+      <div class="detalles">
+        <h3>Café para Cold Brew</h3>
+        <p>Perfil dulce y refrescante. Notas: Frutas rojas, vainilla.</p>
+        <div class="select-box"><label>Cantidad:</label><input id="prod4-qty" type="number" value="0" min="0"></div>
+        <button class="btn small" onclick="addToCart(4)">Añadir al carrito</button>
+        <button class="btn secondary small" onclick="comprar(4)">Comprar</button>
+      </div>
+    </div>
+
+    <button class="btn secondary" onclick="volver()">Volver</button>
+  </section>
+
+    <section id="carrito" class="seccion">
+    <h2>Tu Carrito</h2>
+    <div id="cart-contents" class="cart-list">
+          </div>
+    <div class="cart-summary">
+      <div id="cart-total">Total items: 0</div>
+      <div>
+        <button class="btn secondary" onclick="vaciarCarrito()">Vaciar</button>
+        <button class="btn" onclick="comprarDesdeCarrito()">Comprar</button>
+      </div>
+    </div>
+    <br>
+    <button class="btn secondary" onclick="volver()">Volver</button>
+  </section>
+
+    <section id="comentarios" class="seccion">
+      <h2>⭐ Comentarios y Reseñas</h2>
+      <div class="review-form">
+        <h3>Déjanos tu opinión</h3>
+        <input id="review-name" placeholder="Tu nombre" required>
+        <textarea id="review-text" placeholder="Tu comentario sobre nuestros productos..." required></textarea>
+        <button class="btn" onclick="submitReview()">Enviar Comentario</button>
+      </div>
+      <br>
+      <h3>Comentarios Recientes</h3>
+      <div id="review-list">
+        <div class="review"><strong>Sofía V. (España)</strong><p>El Geisha es espectacular, llegó en perfectas condiciones a Madrid. ¡Recomendado!</p></div>
+        <div class="review"><strong>Carlos M. (Panamá)</strong><p>Excelente servicio y calidad. El café Altura es mi favorito para las mañanas.</p></div>
+        <div class="review"><strong>Hans R. (Alemania)</strong><p>Gran sabor a cacao en el tueste oscuro. La logística de envío fue muy rápida.</p></div>
+      </div>
+      <button class="btn secondary" onclick="volver()">Volver</button>
+    </section>
+
+    <section id="envio" class="seccion">
+    <h2>Estado del Envío</h2>
+    <div class="envio-grid">
+      <div class="pasos">
+        <div class="paso"><strong>1.</strong> Boquete → Centro logístico en David</div>
+        <div class="paso"><strong>2.</strong> David → Puerto en Colón</div>
+        <div class="paso"><strong>3.</strong> Trámites Aduaneros y Documentación</div>
+        <div class="paso"><strong>4.</strong> Transporte Internacional (Panamá → Europa)</div>
+        <div class="paso"><strong>5.</strong> Distribución en Europa</div>
+      </div>
+      <div class="tracking" aria-hidden="false">
+        <div class="circle" id="c1"></div><div class="label">Recogida</div>
+        <div class="circle" id="c2"></div><div class="label">Hacia puerto</div>
+        <div class="circle" id="c3"></div><div class="label">Aduanas</div>
+        <div class="circle" id="c4"></div><div class="label">En tránsito</div>
+        <div class="circle" id="c5"></div><div class="label">Distribución</div>
+      </div>
+    </div>
+    <p id="estado-texto" style="margin-top:12px;color:#444;font-weight:600"></p>
+    <button class="btn secondary" onclick="volver()">Volver</button>
+  </section>
+
+    <section id="contacto" class="seccion">
+    <h2>Contáctenos</h2>
+    <div class="contacto-grid">
+      <div class="info">
+        <p><strong>Somos un grupo de aficionados al café que en alianza con los mejores Productores de Panamá, queremos compartir contigo nuestra pasión por el mejor café del mundo.</strong></p>
+        <p>Ciudad de Panamá, Panamá.<br>(+507) 6327-3612<br><a href="mailto:info@panamacoffepiltover.com">info@panamacoffepiltover.com</a></p>
+      </div>
+      <div class="form">
+        <h3>Escríbenos para mayor información</h3>
+        <input id="contact-name" placeholder="Nombre">
+        <input id="contact-email" placeholder="Correo electrónico">
+        <input id="contact-phone" placeholder="Teléfono">
+        <input id="contact-order" placeholder="#N Pedido (opcional)">
+        <textarea id="contact-msg" placeholder="Mensaje" rows="5"></textarea>
+        <button class="btn" onclick="enviarContacto()">Enviar</button>
+      </div>
+    </div>
+    <button class="btn secondary" onclick="volver()">Volver</button>
+  </section>
+
+  <section id="conocenos" class="seccion">
+    <h2>🌍 Nuestro Proceso: De la Finca al Mundo</h2>
+    
+    <div class="conocenos-layout">
+      <div class="conocenos-texto">
+        <p>En nuestra finca en Boquete, Chiriquí, el proceso comienza con las manos expertas de nuestros recolectores, quienes seleccionan cuidadosamente solo las cerezas de café en su punto óptimo de maduración. Esta selección manual es el primer paso crucial para garantizar la alta calidad.</p>
+        <p>Una vez procesado y empacado, trasladamos el producto hacia los centros logísticos y posteriormente al puerto de Colón. Cumplimos rigurosamente con todos los requisitos de calidad, aduanas y documentación internacional para asegurar que cada lote viaje seguro.</p>
+        <p>A través de rutas marítimas eficientes, nuestro café llega a Europa para ser disfrutado por consumidores que valoran el auténtico sabor de las montañas panameñas. ☕✨</p>
+      </div>
+      
+      <div class="conocenos-imagen-lateral">
+        <img src="https://images.unsplash.com/photo-1511537190424-bbbab87ac5eb?auto=format&fit=crop&w=800&q=80" alt="Manos recolectando cerezas de café maduras en la finca">
+      </div>
+    </div>
+    
+    <br><button class="btn" onclick="volver()">Volver</button>
+  </section>
+
+  <section id="perfil" class="seccion">
+    <h2>👤 Mi Perfil</h2>
+    <div class="perfil-menu">
+        <button class="active" onclick="showProfileTab('acceso', this)">🔑 Acceso</button>
+        <button onclick="showProfileTab('pago', this)">💳 Forma de Pago</button>
+        <button onclick="showProfileTab('direccion', this)">🏠 Dirección</button>
+        <button onclick="showProfileTab('compras', this)">🛒 Historial de Compras</button>
+        <button onclick="mostrar('soporte-chat')">💬 Soporte Ecxynie</button> 
+    </div>
+
+    <div class="perfil-content">
+        <div id="acceso" class="active-tab">
+            <h3>🔑 Iniciar Sesión / Registrarse</h3>
+
+            <div id="access-main" class="access-buttons">
+                <button class="btn" onclick="showAccessForm('login')">Iniciar Sesión</button>
+                <button class="btn secondary" onclick="showAccessForm('register')">Registrarse</button>
+            </div>
+
+            <div id="login-form" class="form-container" style="display:none;">
+                <h4>Iniciar Sesión</h4>
+                <input id="login-email" type="email" placeholder="Correo electrónico" required>
+                <input id="login-pass" type="password" placeholder="Contraseña" required>
+                <button class="btn" onclick="handleLogin()">Acceder</button>
+                <button class="btn secondary" onclick="showAccessForm('main')">Volver</button>
+            </div>
+
+            <div id="register-form" class="form-container" style="display:none;">
+                <h4>Crear Cuenta</h4>
+                <div class="input-row">
+                    <input id="reg-name" placeholder="Nombre" required>
+                    <input id="reg-apellido" placeholder="Apellido" required>
+                </div>
+                <input id="reg-email" type="email" placeholder="Correo electrónico" required>
+                <div class="input-row">
+                    <input id="reg-birthdate" type="date" placeholder="Fecha de Nacimiento" title="Fecha de Nacimiento" required>
+                    <input id="reg-id" placeholder="Cédula / ID" required>
+                </div>
+                <input id="reg-phone" placeholder="Número de Celular" required>
+                <input id="reg-pass" type="password" placeholder="Contraseña" required>
+                <button class="btn" onclick="handleRegister()">Registrar Cuenta</button>
+                <button class="btn secondary" onclick="showAccessForm('main')">Volver</button>
+            </div>
+        </div>
+        
+        <div id="pago">
+            <h3>💳 Formas de Pago Guardadas</h3>
+            <div id="saved-payments">
+                <p>No tienes métodos de pago guardados.</p>
+            </div>
+
+            <div id="payment-main-actions">
+                <button class="btn secondary small" style="margin-top: 10px;" onclick="showPaymentOptions()">Agregar Nuevo Método</button>
+            </div>
+
+            <div id="payment-options" style="display:none; margin-top: 20px;">
+                <h4>Selecciona un método:</h4>
+                <button onclick="showPaymentForm('paypal')">PayPal</button>
+                <button onclick="showPaymentForm('card')">Tarjeta de Crédito/Débito</button>
+                <button class="btn secondary small" onclick="hidePaymentOptions()" style="margin-left: 10px;">Cancelar</button>
+            </div>
+
+            <div id="paypal-form" class="payment-form-box" style="display:none;">
+                <h4>Conectar con PayPal</h4>
+                <input id="paypal-email" type="email" placeholder="Correo electrónico de PayPal" required>
+                <button class="btn small" onclick="savePayment('PayPal')">Guardar PayPal</button>
+                <button class="btn secondary small" onclick="hidePaymentForm()">Volver</button>
+            </div>
+
+            <div id="card-form" class="payment-form-box form-container" style="display:none;">
+                <h4>Datos de la Tarjeta</h4>
+                <input id="card-number" placeholder="Número de tarjeta (16 dígitos)" maxlength="16" type="tel" required>
+                <input id="card-name" placeholder="Nombre del titular de la tarjeta" required>
+                
+                <div class="input-row" style="margin-top: 5px;">
+                    <input id="card-expiry" placeholder="MM/AA" maxlength="5" required style="max-width: 120px;">
+                    <input id="card-cvv" placeholder="CVV/CVC" maxlength="4" required style="max-width: 100px;">
+                </div>
+                
+                <button class="btn small" onclick="savePayment('Tarjeta ****')">Guardar Tarjeta</button>
+                <button class="btn secondary small" onclick="hidePaymentForm()">Volver</button>
+            </div>
+        </div>
+        
+        <div id="direccion">
+            <h3>🏠 Mis Direcciones de Envío</h3>
+            <div id="saved-addresses">
+                <p>Cargando direcciones...</p>
+            </div>
+
+            <button class="btn secondary small" style="margin-top: 10px;" onclick="showAddressForm()">Agregar Nueva Dirección</button>
+
+            <div id="address-form" class="form-container address-form-container" style="display:none; margin-top: 20px;">
+                <h4>Detalles de la Dirección</h4>
+                <input id="addr-alias" placeholder="Alias (Ej: Casa, Oficina en Madrid)" required>
+                <input id="addr-street" placeholder="Dirección (calle, número, edificio, etc.)" required>
+                <div class="input-row">
+                    <input id="addr-city" placeholder="Ciudad" required>
+                    <input id="addr-state" placeholder="Estado/Provincia" required>
+                </div>
+                <div class="input-row">
+                    <input id="addr-zip" placeholder="Código postal" required>
+                    <input id="addr-country" placeholder="País" required>
+                </div>
+                
+                <div style="display:flex; gap: 10px; margin-top: 15px;">
+                    <button class="btn" style="flex: 1;" onclick="saveAddress()">Guardar Dirección</button>
+                    <button class="btn secondary" style="flex: 1;" onclick="hideAddressForm()">Cancelar</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="compras">
+            <h3>🛒 Historial de Compras</h3>
+            <div id="purchase-history-list">
+                <p>No se han encontrado compras recientes.</p>
+            </div>
+        </div>
+    </div>
+    <br><button class="btn" onclick="volver()">Volver al Inicio</button>
+  </section>
+  
+  <section id="soporte-chat" class="seccion">
+    <h2>💬 Asistente de Soporte Ecxynie</h2>
+    <p>Hola, soy **Ecxynie**, el asistente virtual de Piltover Café. Estoy aquí para resolver tus consultas frecuentes sobre pedidos, envíos y productos.</p>
+    
+    <div id="message-history-list" style="margin-top: 20px; max-height: 550px; overflow-y: auto; padding-right: 10px; border: 1px solid #ddd; border-radius: 12px; padding: 15px; background: #fafafa;">
+        <p>Cargando historial...</p>
+    </div>
+
+    <div class="form-container" style="display:flex; gap: 10px; align-items: center; margin-top: 20px; border-top: 1px solid #e0e0e0; padding-top: 15px;">
+        <input id="new-message-text" placeholder="Escribe tu consulta aquí..." required style="flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #d0d0d0;">
+        <button class="btn" onclick="sendMessage()">Enviar</button>
+        <button class="btn secondary" style="background: #e0e0e0; color: #444;" onclick="clearMessageHistory()">🗑️ Borrar Historial</button>
+    </div>
+    
+    <br><button class="btn secondary" onclick="volver()">Volver al Inicio</button>
+</section>
+
+
+</div> 
+
+<footer>
+  <a class="footer-btn" onclick="mostrar('perfil')">👤 Mi Perfil</a>
+  <a class="footer-btn" onclick="mostrar('conocenos')">Conócenos</a>
+  <a class="footer-btn" onclick="mostrar('carrito')">Carrito (<span id="footer-cart-count">0</span>)</a>
+</footer>
+
+<div id="toast-container"></div>
+
+
+<script>
+// ====================================================================
+// === 1. VARIABLES GLOBALES Y PERSISTENCIA (localStorage) ===
+// ====================================================================
+let cart = JSON.parse(localStorage.getItem('piltover_cart')||'[]');
+let savedPayments = JSON.parse(localStorage.getItem('piltover_payments')||'[]');
+let purchaseHistory = JSON.parse(localStorage.getItem('piltover_history')||'[]');
+let savedAddresses = JSON.parse(localStorage.getItem('piltover_addresses')||'[]');
+let messageHistory = JSON.parse(localStorage.getItem('piltover_messages') || '[]');
+
+
+let pedidoActual = null;
+let trackingInterval = null;
+let editingAddressIndex = -1; // -1 significa que estamos agregando una nueva dirección
+
+
+const products = {
+  1:{id:1,name:'Café Altura',img:'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=800&q=80'}, 
+  2:{id:2,name:'Café de Montaña',img:'https://images.unsplash.com/photo-1517685352821-92cf88aee5a5?auto=format&fit=crop&w=800&q=80'},
+  3:{id:3,name:'Geisha Boquete',img:'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=800&q=80'},
+  4:{id:4,name:'Cold Brew',img:'https://images.unsplash.com/photo-1445077100181-a33eac94db0?auto=format&fit=crop&w=800&q=80'}
+};
+
+// ====================================================================
+// === 2. FUNCIONES DE UTILIDAD Y CORE ===
+// ====================================================================
+
+function guardarCarrito(){localStorage.setItem('piltover_cart',JSON.stringify(cart)); actualizarCarritoBtn();}
+function guardarPagos(){localStorage.setItem('piltover_payments',JSON.stringify(savedPayments)); renderPayments();}
+function guardarHistorial(){
+    try {
+        localStorage.setItem('piltover_history',JSON.stringify(purchaseHistory));
+    } catch (e) {
+        console.error("Error al guardar en localStorage:", e);
+        showToast("Error: No se pudo guardar la compra (LocalStorage bloqueado)", true);
+    }
+}
+function guardarDirecciones(){
+    localStorage.setItem('piltover_addresses', JSON.stringify(savedAddresses));
+    renderAddresses(); 
+}
+function saveMessageHistory() {
+    localStorage.setItem('piltover_messages', JSON.stringify(messageHistory));
+}
+
+
+function actualizarCarritoBtn(){
+    const span = document.getElementById('footer-cart-count'); 
+    if(!span) return;
+    const total = cart.reduce((s,i)=>s+Number(i.qty),0);
+    span.textContent = total;
+}
+
+function showToast(message, isError = false) {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    if (isError) {
+        toast.style.backgroundColor = '#d9534f'; 
+    }
+    
+    const icon = isError ? '❌' : '✓'; 
+    
+    toast.innerHTML = `<span class="toast-icon">${icon}</span> ${message}`;
+    
+    container.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.classList.add('show');
+    }, 10);
+    
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+            container.removeChild(toast);
+        }, 300); 
+    }, 4000);
+}
+
+
+function addToCart(prodId){
+  const prod = products[prodId];
+  if(!prod) return showToast('Producto no encontrado', true); 
+  
+  let size=null; let type=null; let qty=0;
+  try{
+    if(prodId===1) size=document.getElementById('prod1-size').value;
+    if(prodId===2) size=document.getElementById('prod2-size').value;
+    if(prodId===3) type=document.getElementById('prod3-type').value;
+    qty = Number(document.getElementById('prod'+prodId+'-qty').value || 0);
+  }catch(e){qty=0}
+
+  if (qty <= 0) {
+      showToast('Por favor, ingresa una cantidad mayor a cero.', true);
+      return; 
+  }
+
+  const existing = cart.find(i=>i.id===prodId && i.size===size && i.type===type);
+  if(existing) existing.qty = Number(existing.qty)+Number(qty);
+  else cart.push({id:prodId,name:prod.name,qty:Number(qty),size,type,img:prod.img});
+  
+  guardarCarrito();
+  showToast(`${prod.name} x${qty} agregado al carrito`);
+}
+
+// Mostrar secciones 
+function mostrar(id){
+    document.querySelectorAll('.seccion').forEach(s=>s.classList.remove('visible')); 
+    const el=document.getElementById(id); 
+    if(el) el.classList.add('visible'); 
+    if(id==='carrito') renderCart(); 
+    // Lógica específica para pestañas de perfil
+    if(id==='perfil') {
+        const activeTab = document.querySelector('.perfil-menu button.active');
+        // Usa el valor del atributo onclick para obtener el ID de la pestaña.
+        const activeTabId = activeTab ? activeTab.getAttribute('onclick').match(/'(.*?)'/)[1] : 'acceso';
+        // Simplemente llama a la función de cambio de pestaña para asegurar la inicialización
+        showProfileTab(activeTabId, activeTab || document.querySelector('.perfil-menu button:first-child'));
+    }
+    // Lógica específica para el chat (asegurar que se renderice al entrar)
+    if(id==='soporte-chat') {
+        renderMessageHistory();
+    }
+    window.scrollTo({top:0,behavior:'smooth'});
+} 
+function volver(){document.querySelectorAll('.seccion').forEach(s=>s.classList.remove('visible')); window.scrollTo({top:0,behavior:'smooth'});} 
+
+// Vaciar carrito (Función faltante)
+function vaciarCarrito() {
+    if (cart.length > 0) {
+        cart = [];
+        guardarCarrito();
+        renderCart();
+        showToast('El carrito ha sido vaciado.');
+    } else {
+        showToast('El carrito ya está vacío.', true);
+    }
+}
+
+
+// Compra directa (producto único) 
+function comprar(prodId){
+  const prod = products[prodId];
+  const qtyInput = document.getElementById('prod'+prodId+'-qty');
+  const qty = Number(qtyInput.value || 0);
+  if (qty <= 0) {
+      showToast('Ingresa una cantidad mayor a cero para comprar.', true);
+      return; 
+  }
+   
+  let size=null; let type=null;
+  if(prodId===1) size=document.getElementById('prod1-size').value;
+  if(prodId===2) size=document.getElementById('prod2-size').value;
+  if(prodId===3) type=document.getElementById('prod3-type').value;
+
+  const itemDetails = [{
+      name: prod.name,
+      qty: qty,
+      size: size,
+      type: type
+  }];
+  
+  // 1. Crear y Guardar el pedido inmediatamente
+  const newOrderId = Math.floor(Math.random() * (9999 - 1000 + 1)) + 1000; 
+  const newPurchase = {
+      id: newOrderId,
+      date: new Date().toLocaleDateString('es-PA'),
+      items: itemDetails,
+      status: 'En preparación',
+      destination: 'Europa',
+      source: 'Compra Directa'
+  };
+  purchaseHistory.unshift(newPurchase); 
+  guardarHistorial(); // <--- LLAMADA CLAVE: GUARDA ANTES DE CAMBIAR DE VISTA
+
+  // 2. Iniciar seguimiento y cambiar de vista
+  pedidoActual = {id:newOrderId, items:itemDetails};
+  mostrar('envio'); 
+  iniciarTracking(); 
+  document.getElementById('estado-texto').textContent = `Pedido #${newOrderId} en preparación — ${itemDetails[0].name} x${itemDetails[0].qty}`;
+  showToast(`Compra directa de ${itemDetails[0].name} iniciada (Pedido #${newOrderId}).`);
+}
+
+// Comprar desde carrito
+function comprarDesdeCarrito(){ 
+  if(cart.length===0){
+    showToast('El carrito está vacío.', true); 
+    return;
+  } 
+  
+  // ID de 4 dígitos entero
+  const newOrderId = Math.floor(Math.random() * (9999 - 1000 + 1)) + 1000;
+  const itemDetails = cart.map(i => ({
+      name: i.name,
+      qty: i.qty,
+      size: i.size,
+      type: i.type
+  }));
+
+  // 1. Crear y Guardar el pedido inmediatamente
+  const newPurchase = {
+      id: newOrderId,
+      date: new Date().toLocaleDateString('es-PA'),
+      items: itemDetails,
+      status: 'En preparación',
+      destination: 'Europa',
+      source: 'Compra desde Carrito'
+  };
+  purchaseHistory.unshift(newPurchase); 
+  guardarHistorial(); // <--- LLAMADA CLAVE: GUARDA ANTES DE CAMBIAR DE VISTA
+
+  // 2. Iniciar seguimiento y cambiar de vista
+  pedidoActual = {id:newOrderId, items:itemDetails}; 
+  mostrar('envio'); 
+  iniciarTracking(); 
+  document.getElementById('estado-texto').textContent = `Pedido #${newOrderId} en preparación — ${itemDetails.length} productos`; 
+  showToast(`Pedido #${newOrderId} confirmado. Rastreo iniciado.`);
+  
+  // 3. Vaciar carrito (después de guardar la compra)
+  cart=[]; guardarCarrito(); renderCart(); 
+}
+
+function iniciarTracking(){
+  for(let i=1;i<=5;i++){document.getElementById('c'+i).classList.remove('active');}
+  if(trackingInterval){clearInterval(trackingInterval);trackingInterval=null}
+  let step=1;
+  document.getElementById('c1').classList.add('active');
+  const labels=['Recogida','Hacia puerto','Aduanas','En tránsito','Distribución'];
+  document.getElementById('estado-texto').textContent = `Pedido #${pedidoActual.id} — ${labels[0]}`;
+  trackingInterval = setInterval(()=>{ 
+    step++; 
+    if(step<=5){
+        document.getElementById('c'+step).classList.add('active'); 
+        document.getElementById('estado-texto').textContent = `Pedido #${pedidoActual.id} — ${labels[step-1]}`;
+    } 
+    if(step>=5){
+        clearInterval(trackingInterval);
+        trackingInterval=null; 
+        document.getElementById('estado-texto').textContent = `Pedido #${pedidoActual.id} completado y en distribución.`;
+        
+        // Actualizar el estado en el historial cuando se completa
+        const completedPurchase = purchaseHistory.find(p => p.id === pedidoActual.id);
+        if (completedPurchase) {
+            completedPurchase.status = 'Entregado';
+            guardarHistorial(); // Guarda el estado final
+        }
+    } 
+  },15000); 
+}
+
+// Contacto (simulación)
+function enviarContacto(){
+  const nombre=document.getElementById('contact-name').value||'[Sin nombre]';
+  const email=document.getElementById('contact-email').value||'[Sin email]';
+  showToast(`Gracias ${nombre}. Mensaje enviado.`, false);
+  ['contact-name','contact-email','contact-phone','contact-order','contact-msg'].forEach(id=>{const el=document.getElementById(id); if(el) el.value='';});
+}
+
+// Comentarios (simulación)
+function submitReview() {
+    const name = document.getElementById('review-name').value;
+    const text = document.getElementById('review-text').value;
+
+    if (!name || !text) {
+        showToast('Debes ingresar tu nombre y un comentario.', true);
+        return;
+    }
+
+    // Crear el nuevo comentario
+    const reviewList = document.getElementById('review-list');
+    const newReview = document.createElement('div');
+    newReview.className = 'review';
+    newReview.innerHTML = `<strong>${name} (Panamá)</strong><p>${text}</p>`;
+    
+    // Añadir el nuevo comentario al inicio de la lista
+    reviewList.prepend(newReview);
+
+    showToast('Gracias por tu comentario!', false);
+    document.getElementById('review-name').value = '';
+    document.getElementById('review-text').value = '';
+}
+
+
+// ====================================================================
+// === 3. LÓGICA DE PESTAÑAS Y PERFIL ===
+// ====================================================================
+
+function showAccessForm(mode) {
+    document.getElementById('access-main').style.display = 'none';
+    document.getElementById('login-form').style.display = 'none';
+    document.getElementById('register-form').style.display = 'none';
+
+    if (mode === 'login') {
+        document.getElementById('login-form').style.display = 'block';
+    } else if (mode === 'register') {
+        document.getElementById('register-form').style.display = 'block';
+    } else {
+        document.getElementById('access-main').style.display = 'flex';
+    }
+}
+function handleLogin() {showToast(`¡Bienvenido! Sesión iniciada con [simulado].`); showAccessForm('main');}
+function handleRegister() {showToast(`¡Cuenta creada y sesión iniciada para [simulado]!`); showAccessForm('main');}
+
+
+// LÓGICA PRINCIPAL DE CAMBIO DE PESTAÑA
+function showProfileTab(tabId, buttonElement) {
+    // 1. Ocultar todos los contenidos de las pestañas
+    document.querySelectorAll('.perfil-content div').forEach(div => {
+        div.classList.remove('active-tab');
+    });
+
+    // 2. Mostrar el contenido de la pestaña seleccionada
+    const tabContent = document.getElementById(tabId);
+    if (tabContent) {
+        tabContent.classList.add('active-tab');
+    }
+
+    // 3. Desactivar todos los botones
+    document.querySelectorAll('.perfil-menu button').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    // 4. Activar el botón seleccionado (si existe)
+    if (buttonElement) {
+        buttonElement.classList.add('active');
+    }
+
+    // 5. Lógica específica para inicializar pestañas:
+    if (tabId === 'pago') {
+        renderPayments();
+        hidePaymentForm(); 
+        hidePaymentOptions();
+    } else if (tabId === 'compras') {
+        purchaseHistory = JSON.parse(localStorage.getItem('piltover_history') || '[]');
+        renderPurchaseHistory(); 
+    } else if (tabId === 'direccion') {
+        savedAddresses = JSON.parse(localStorage.getItem('piltover_addresses') || '[]');
+        renderAddresses();
+        hideAddressForm();
+    }
+    // NOTA: La lógica de chat se movió a la función `mostrar('soporte-chat')`
+}
+
+
+// LÓGICA DE GESTIÓN DE DIRECCIONES
+function renderAddresses() {
+    const container = document.getElementById('saved-addresses');
+    container.innerHTML = '';
+    
+    if (savedAddresses.length === 0) {
+        container.innerHTML = '<p>No tienes direcciones de envío guardadas.</p>';
+        return;
+    }
+    
+    savedAddresses.forEach((addr, index) => {
+        const div = document.createElement('div');
+        div.className = 'address-item';
+        div.innerHTML = `
+            <strong>${addr.alias}</strong>
+            <p>${addr.street}</p>
+            <p>${addr.city}, ${addr.state} ${addr.zip}</p>
+            <p>${addr.country}</p>
+            <div class="address-actions">
+                <button class="btn secondary small" onclick="editAddress(${index})">Editar</button>
+                <button class="btn small" style="background:#d9534f;" onclick="removeAddress(${index})">Eliminar</button>
+            </div>
+        `;
+        container.appendChild(div);
+    });
+}
+
+function showAddressForm(index = -1) {
+    editingAddressIndex = index;
+    const form = document.getElementById('address-form');
+    form.style.display = 'block';
+
+    // Limpiar formulario por defecto (modo Agregar)
+    document.getElementById('addr-alias').value = '';
+    document.getElementById('addr-street').value = '';
+    document.getElementById('addr-city').value = '';
+    document.getElementById('addr-state').value = '';
+    document.getElementById('addr-zip').value = '';
+    document.getElementById('addr-country').value = '';
+    
+    form.querySelector('h4').textContent = 'Detalles de la Dirección';
+
+    if (index !== -1 && savedAddresses[index]) {
+        // Modo Editar
+        const addr = savedAddresses[index];
+        document.getElementById('addr-alias').value = addr.alias;
+        document.getElementById('addr-street').value = addr.street;
+        document.getElementById('addr-city').value = addr.city;
+        document.getElementById('addr-state').value = addr.state;
+        document.getElementById('addr-zip').value = addr.zip;
+        document.getElementById('addr-country').value = addr.country;
+        form.querySelector('h4').textContent = `Editar Dirección: ${addr.alias}`;
+    }
+}
+
+function hideAddressForm() {
+    document.getElementById('address-form').style.display = 'none';
+    editingAddressIndex = -1;
+}
+
+function saveAddress() {
+    const newAddress = {
+        alias: document.getElementById('addr-alias').value,
+        street: document.getElementById('addr-street').value,
+        city: document.getElementById('addr-city').value,
+        state: document.getElementById('addr-state').value,
+        zip: document.getElementById('addr-zip').value,
+        country: document.getElementById('addr-country').value
+    };
+
+    if (!newAddress.alias || !newAddress.street || !newAddress.city || !newAddress.country) {
+        showToast('Por favor, complete al menos los campos principales de la dirección.', true);
+        return;
+    }
+
+    if (editingAddressIndex === -1) {
+        savedAddresses.push(newAddress);
+        showToast(`Nueva dirección (${newAddress.alias}) guardada.`);
+    } else {
+        savedAddresses[editingAddressIndex] = newAddress;
+        showToast(`Dirección (${newAddress.alias}) actualizada.`);
+    }
+
+    guardarDirecciones();
+    hideAddressForm();
+}
+
+function editAddress(index) {
+    showAddressForm(index);
+}
+
+function removeAddress(index) {
+    const alias = savedAddresses[index].alias;
+    savedAddresses.splice(index, 1);
+    guardarDirecciones();
+    showToast(`Dirección (${alias}) eliminada.`);
+}
+
+
+// LÓGICA DE FORMA DE PAGO
+function renderPayments() {
+    const container = document.getElementById('saved-payments');
+    container.innerHTML = '';
+    if (savedPayments.length === 0) {
+        container.innerHTML = '<p>No tienes métodos de pago guardados.</p>';
+    } else {
+        savedPayments.forEach((method, index) => {
+            const p = document.createElement('p');
+            p.innerHTML = `💳 <strong>${method.type}</strong> - ${method.details} <button class="btn secondary small" style="margin-left: 10px;" onclick="removePayment(${index})">Eliminar</button>`;
+            container.appendChild(p);
+        });
+    }
+}
+function removePayment(index) {savedPayments.splice(index, 1); guardarPagos(); showToast('Método de pago eliminado.');}
+function showPaymentOptions() {document.getElementById('payment-main-actions').style.display = 'none'; document.getElementById('payment-options').style.display = 'block'; hidePaymentForm();}
+function hidePaymentOptions() {document.getElementById('payment-main-actions').style.display = 'block'; document.getElementById('payment-options').style.display = 'none'; hidePaymentForm();}
+function showPaymentForm(type) {document.getElementById('payment-options').style.display = 'none'; document.getElementById('paypal-form').style.display = 'none'; document.getElementById('card-form').style.display = 'none'; if (type === 'paypal') {document.getElementById('paypal-form').style.display = 'block';} else if (type === 'card') {document.getElementById('card-form').style.display = 'block';}}
+function hidePaymentForm() {document.getElementById('paypal-form').style.display = 'none'; document.getElementById('card-form').style.display = 'none'; document.getElementById('paypal-email').value = ''; document.getElementById('card-number').value = ''; document.getElementById('card-expiry').value = ''; document.getElementById('card-name').value = ''; document.getElementById('card-cvv').value = ''; showPaymentOptions(); }
+function savePayment(type) {
+    let details = ''; let methodName = '';
+    if (type === 'PayPal') {const email = document.getElementById('paypal-email').value; if (!email) {showToast('El correo electrónico de PayPal es requerido.', true); return;} details = `Email: ${email}`; methodName = 'PayPal';} 
+    else if (type === 'Tarjeta ****') {
+        const number = document.getElementById('card-number').value; const expiry = document.getElementById('card-expiry').value; const name = document.getElementById('card-name').value; const cvv = document.getElementById('card-cvv').value; 
+        if (!number || !expiry || !name || !cvv || number.length !== 16) {showToast('Verifique los campos de la tarjeta.', true); return;}
+        details = `Terminada en ${number.slice(-4)}`; methodName = 'Tarjeta de Crédito/Débito';
+    } else {return;}
+    savedPayments.push({type: methodName, details: details}); guardarPagos(); showToast(`Método de pago (${methodName}) guardado exitosamente.`); hidePaymentOptions(); 
+}
+
+// LÓGICA DE HISTORIAL DE COMPRAS
+function renderPurchaseHistory() {
+    const container = document.getElementById('purchase-history-list');
+    container.innerHTML = '';
+
+    if (purchaseHistory.length === 0) {
+        container.innerHTML = '<p>No se han encontrado compras recientes.</p>';
+        return;
+    }
+    
+    purchaseHistory.forEach(purchase => {
+        const div = document.createElement('div');
+        div.className = 'purchase-item';
+        let itemList = purchase.items.map(item => {
+            const sizeDetail = item.size ? ` (${item.size})` : (item.type ? ` (${item.type})` : '');
+            return `${item.qty}x ${item.name}${sizeDetail}`;
+        }).join(', ');
+        let statusColor = '#be8040'; 
+        if (purchase.status === 'Entregado') {statusColor = 'green';} else if (purchase.status === 'En Aduanas') {statusColor = 'orange';}
+
+        div.innerHTML = `
+            <span class="debug-info">Fuente: ${purchase.source || 'Desconocida'}</span>
+            <strong>Pedido #${purchase.id}</strong>
+            <p style="color: ${statusColor}; font-weight: 600;">Estado: ${purchase.status}</p>
+            <div class="purchase-details">
+                Fecha: ${purchase.date}<br>
+                Items: ${itemList}<br>
+                Destino: ${purchase.destination}
+            </div>
+        `;
+        container.appendChild(div);
+    });
+}
+
+
+// ====================================================================
+// === 4. LÓGICA DEL CHATBOT DE SOPORTE (Ecxynie) ===
+// ====================================================================
+
+// Función para renderizar el historial de mensajes
+function renderMessageHistory() {
+    const container = document.getElementById('message-history-list');
+    container.innerHTML = '';
+    
+    if (messageHistory.length === 0) {
+        container.innerHTML = '<p>Comienza una conversación con Ecxynie...</p>';
+        return;
+    }
+    
+    // Iteramos al revés para que los más nuevos aparezcan primero
+    for (let i = messageHistory.length - 1; i >= 0; i--) {
+        const msg = messageHistory[i];
+        const p = document.createElement('p');
+        
+        // Asignar clase para el estilo visual
+        const typeClass = msg.type === 'Ecxynie' ? 'bot-msg' : 'user-msg';
+        p.className = typeClass;
+        
+        // Determinar el nombre a mostrar (Usuario o Ecxynie)
+        const nameDisplay = msg.type === 'Usuario' ? 'Tú' : 'Ecxynie';
+        const nameColor = msg.type === 'Ecxynie' ? '#be8040' : 'green';
+        
+        p.innerHTML = `<strong style="color: ${nameColor};">[${msg.date}] ${nameDisplay}:</strong> ${msg.text}`;
+        
+        // Usamos appendChild para listar en el orden correcto
+        container.appendChild(p); 
+    }
+    
+    // Desplazar al último mensaje (abajo)
+    container.scrollTop = container.scrollHeight;
+}
+
+// Lógica del Bot (Respuestas basadas en palabras clave)
+function getBotResponse(message) {
+    const lowerCaseMessage = message.toLowerCase();
+
+    if (lowerCaseMessage.includes('envio') || lowerCaseMessage.includes('rastreo') || lowerCaseMessage.includes('seguimiento') || lowerCaseMessage.includes('pedido')) {
+        return "Para el estado de su pedido o envío, por favor haga clic en la pestaña **'Envío'** en el menú principal. Si ya tiene un número de pedido, le recomendamos usar la pestaña Compras.";
+    }
+
+    if (lowerCaseMessage.includes('catalogo') || lowerCaseMessage.includes('productos') || lowerCaseMessage.includes('cafes') || lowerCaseMessage.includes('precios')) {
+        return "Puede ver todos nuestros productos y precios en la pestaña **'Catálogo'**. ¡El Geisha Boquete es nuestra joya!";
+    }
+
+    if (lowerCaseMessage.includes('hola') || lowerCaseMessage.includes('gracias') || lowerCaseMessage.includes('saludos')) {
+        return "¡Hola! Soy Ecxynie, el asistente virtual de Piltover Café. Estoy aquí para ayudarte con consultas frecuentes.";
+    }
+
+    if (lowerCaseMessage.includes('pago') || lowerCaseMessage.includes('tarjeta') || lowerCaseMessage.includes('factura')) {
+        return "La gestión de métodos de pago y la solicitud de facturas se realiza en la pestaña **'Forma de Pago'** dentro de su perfil.";
+    }
+    
+    if (lowerCaseMessage.includes('dirección') || lowerCaseMessage.includes('cambiar') || lowerCaseMessage.includes('entrega')) {
+        return "Las direcciones de envío se administran en la pestaña **'Dirección'** dentro de su perfil. Desde allí puede editar o agregar nuevas ubicaciones.";
+    }
+
+    // Respuesta por defecto
+    return "Lo siento, no tengo una respuesta programada para esa consulta. Para hablar con un agente humano, puede usar la pestaña **'Contacto'** o enviar un correo a info@panamacoffepiltover.com (respuesta en 24h).";
+}
+
+
+// Función principal de envío y respuesta del bot
+function sendMessage() {
+    const inputElement = document.getElementById('new-message-text');
+    const userText = inputElement.value.trim();
+
+    if (!userText) {
+        showToast('El mensaje no puede estar vacío.', true);
+        return;
+    }
+
+    const today = new Date().toLocaleDateString('es-PA');
+
+    // 1. Añadir el mensaje del usuario al historial
+    messageHistory.push({ type: 'Usuario', date: today, text: userText });
+    saveMessageHistory();
+    
+    // 2. Limpiar el input y actualizar la vista inmediatamente
+    inputElement.value = '';
+    renderMessageHistory();
+    
+    // 3. Generar la respuesta del bot
+    let botResponse = getBotResponse(userText);
+    
+    // 4. Añadir la respuesta del bot (Ecxynie) al historial (con un pequeño delay para simular procesamiento)
+    setTimeout(() => {
+        messageHistory.push({ type: 'Ecxynie', date: today, text: botResponse }); // Usamos 'Ecxynie' como tipo
+        saveMessageHistory();
+        renderMessageHistory();
+        showToast('Ecxynie ha respondido.');
+    }, 500); 
+}
+
+// Función para borrar el historial completo
+function clearMessageHistory() {
+    if (confirm("¿Estás seguro de que deseas borrar todo el historial de mensajes? Esta acción es irreversible.")) {
+        messageHistory = [];
+        saveMessageHistory();
+        renderMessageHistory();
+        showToast('Historial de mensajes borrado con éxito.', false);
+    }
+}
+
+
+// ====================================================================
+// === 5. INICIALIZACIÓN ===
+// ====================================================================
+
+document.addEventListener('DOMContentLoaded',()=>{ 
+    actualizarCarritoBtn(); 
+    showProfileTab('acceso', document.querySelector('.perfil-menu button:first-child'));
+    showAccessForm('main');
+
+    // Inicialización del Historial de Compras (si está vacío, añade ejemplos)
+    if (purchaseHistory.length === 0) {
+        purchaseHistory = [
+            { id: 8902, date: '25/11/2025', items: [{ name: 'Café Altura', qty: 1, size: '1 kg' }], status: 'Entregado', destination: 'Alemania', source: 'Simulación' },
+            { id: 7531, date: '20/11/2025', items: [{ name: 'Geisha Boquete', qty: 500, type: 'Grano entero' }], status: 'En Aduanas', destination: 'España', source: 'Simulación' },
+        ];
+        guardarHistorial();
+    }
+    
+    // Inicialización de Direcciones (si está vacío, añade un ejemplo)
+    if (savedAddresses.length === 0) {
+        savedAddresses = [
+            { alias: 'Principal (Rotterdam)', street: 'Weena 1000', city: 'Rotterdam', state: 'Holanda Meridional', zip: '3012 CL', country: 'Países Bajos' },
+        ];
+        guardarDirecciones();
+    }
+    
+    // Inicialización del Historial de Mensajes (si está vacío, añade ejemplos)
+    if (messageHistory.length === 0) {
+        messageHistory = [
+            { type: 'Ecxynie', date: '27/11/2025', text: '¡Bienvenido! Soy Ecxynie, el asistente virtual de Piltover Café. Puedo ayudarte con preguntas sobre envío, catálogo y pagos.' },
+        ];
+        saveMessageHistory();
+    }
+});
+</script>
+</body>
+</html>
